@@ -3,10 +3,13 @@ package study.jpa.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import static javax.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -16,16 +19,39 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
+    @Column(name = "member_di")
     Long id;
     String username;
+    int age;
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "team_id")
+    Team team;
 
     public Member(final String username) {
         this.username = username;
+    }
 
+    public Member(final String username, final int age, final Team team) {
+        this.username = username;
+        this.age = age;
+        if (team != null) this.changeTeam(team);
     }
 
     public void changeUsername(final String username) {
         this.username = username;
+    }
+
+    public void changeTeam(final Team team) {
+        this.team = team;
+        team.getMembers().add(this);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "username = " + username + ", " +
+                "age = " + age + ")";
     }
 }
