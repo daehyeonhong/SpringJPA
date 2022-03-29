@@ -40,10 +40,9 @@ class MemberTest {
         this.entityManager.clear();
         //then
         final List<Member> members = this.entityManager.createQuery("select m from Member m", Member.class).getResultList();
-
-        for (final Member member : members) {
+        members.forEach(member -> {
             System.out.println("member = " + member);
             System.out.println("-> team = " + member.getTeam());
-        }
+        });
     }
 }
