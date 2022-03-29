@@ -65,4 +65,21 @@ class MemberJpaRepositoryTest {
         final long deletedCount = this.memberJpaRepository.count();
         assertThat(deletedCount).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName(value = "이름과 나이 기준 검색")
+    public void findUsernameAndAgeGraterThan() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("AAA", 20);
+        final Member member3 = new Member("AAA", 30);
+        this.memberJpaRepository.save(member1);
+        this.memberJpaRepository.save(member2);
+        this.memberJpaRepository.save(member3);
+        //when
+        final List<Member> memberList = this.memberJpaRepository
+                .findByUsernameAndAgeGreaterThan("AAA", 10);
+        //then
+        assertThat(memberList.size()).isEqualTo(2);
+    }
 }
