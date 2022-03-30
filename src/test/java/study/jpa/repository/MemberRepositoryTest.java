@@ -85,4 +85,18 @@ class MemberRepositoryTest {
         //then
         assertThat(memberList.size()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName(value = "네임드쿼리 테스트")
+    public void findByUsernameNamedQuery() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<Member> result = this.memberRepository.findByUsername("AAA");
+        //then
+        assertThat(result.get(0)).isEqualTo(member1);
+    }
 }
