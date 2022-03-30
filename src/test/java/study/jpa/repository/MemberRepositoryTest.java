@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
+import study.jpa.entity.Team;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Test
     @DisplayName(value = "멤버 저장 테스트")
@@ -112,5 +116,41 @@ class MemberRepositoryTest {
         final List<Member> result = this.memberRepository.findMember("AAA", 10);
         //then
         assertThat(result.get(0)).isEqualTo(member1);
+    }
+
+    @Test
+    @DisplayName(value = "레포지토리 네임드쿼리 이름목록 테스트")
+    public void findUsernameListTestQuery() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<String> usernameList = this.memberRepository.findUsernameList();
+        //then
+        for (String username : usernameList) {
+            System.out.println("username = " + username);
+        }
+    }
+
+    @Test
+    @DisplayName(value = "레포지토리 네임드쿼리 DTO 테스트")
+    public void findMemberToDto() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.teamRepository.save(teamA);
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        member1.changeTeam(teamA);
+        member2.changeTeam(teamA);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<MemberDto> memberDtos = this.memberRepository.findMemberDto();
+        //then
+        for (MemberDto memberDto : memberDtos) {
+            System.out.println("memberDto = " + memberDto);
+        }
     }
 }
