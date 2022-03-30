@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
+import java.util.Collection;
 import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -20,4 +21,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query(value = "select new study.jpa.dto.MemberDto(m.username,m.age,t.name) from Member m join m.team t")
     List<MemberDto> findMemberDto();
+
+    @Query(value = "select m from Member m where m.username in :usernames")
+    List<Member> findByUsername(@Param(value = "usernames") final Collection<String> usernames);
+//    List<Member> findByUsername(@Param(value = "usernames") final String[] usernames); 배열도 사용 가능
 }

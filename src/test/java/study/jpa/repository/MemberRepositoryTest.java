@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
 import study.jpa.entity.Team;
+import java.util.Arrays;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,6 +152,23 @@ class MemberRepositoryTest {
         //then
         for (MemberDto memberDto : memberDtos) {
             System.out.println("memberDto = " + memberDto);
+        }
+    }
+
+    @Test
+    @DisplayName(value = "레포지토리 네임드쿼리 컬렉션 테스트")
+    public void findByUsername() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<Member> members = this.memberRepository.findByUsername(Arrays.asList("AAA", "BBB"));
+//        final List<Member> members = this.memberRepository.findByUsername(new String[]{"AAA", "BBB"}); 배열도 사용 가능
+        //then
+        for (final Member member : members) {
+            System.out.println("member = " + member);
         }
     }
 }
