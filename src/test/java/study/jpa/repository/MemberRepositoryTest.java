@@ -99,4 +99,18 @@ class MemberRepositoryTest {
         //then
         assertThat(result.get(0)).isEqualTo(member1);
     }
+
+    @Test
+    @DisplayName(value = "레포지토리 네임드쿼리 테스트")
+    public void findUserTestQuery() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<Member> result = this.memberRepository.findMember("AAA", 10);
+        //then
+        assertThat(result.get(0)).isEqualTo(member1);
+    }
 }
