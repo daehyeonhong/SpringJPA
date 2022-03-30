@@ -7,6 +7,7 @@ import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByUsernameAndAgeGreaterThan(final String username, final int age);
@@ -23,6 +24,12 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<MemberDto> findMemberDto();
 
     @Query(value = "select m from Member m where m.username in :usernames")
-    List<Member> findByUsername(@Param(value = "usernames") final Collection<String> usernames);
+    List<Member> findByUsernames(@Param(value = "usernames") final Collection<String> usernames);
 //    List<Member> findByUsername(@Param(value = "usernames") final String[] usernames); 배열도 사용 가능
+
+    List<Member> findListByUsername(final String username);//컬렉선
+
+    Member findMemberByUsername(final String username);//단건
+
+    Optional<Member> findOptionalMemberByUsername(final String username);//단건 Optional
 }

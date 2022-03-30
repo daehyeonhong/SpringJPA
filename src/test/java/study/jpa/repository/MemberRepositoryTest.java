@@ -11,6 +11,7 @@ import study.jpa.entity.Member;
 import study.jpa.entity.Team;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -164,11 +165,35 @@ class MemberRepositoryTest {
         this.memberRepository.save(member1);
         this.memberRepository.save(member2);
         //when
-        final List<Member> members = this.memberRepository.findByUsername(Arrays.asList("AAA", "BBB"));
+        final List<Member> members = this.memberRepository.findByUsernames(Arrays.asList("AAA", "BBB"));
 //        final List<Member> members = this.memberRepository.findByUsername(new String[]{"AAA", "BBB"}); 배열도 사용 가능
         //then
         for (final Member member : members) {
             System.out.println("member = " + member);
         }
+    }
+
+    @Test
+    @DisplayName(value = "리턴타입 테스트")
+    public void returnType() {
+        //given
+        final Member member1 = new Member("AAA", 10);
+        final Member member2 = new Member("BBB", 20);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        //when
+        final List<Member> members = this.memberRepository.findListByUsername("AAA");
+        final Member member = this.memberRepository.findMemberByUsername("AAA");
+        final Optional<Member> optionalMember = this.memberRepository.findOptionalMemberByUsername("AAA");
+        final List<Member> result = this.memberRepository.findListByUsername("asdasf");
+        final Member returnNull = this.memberRepository.findMemberByUsername("asdasf");
+        final Optional<Member> optionalNull = this.memberRepository.findOptionalMemberByUsername("asdasf");
+        //then
+        for (final Member mem : members) System.out.println("mem = " + mem);
+        System.out.println("member = " + member);
+        System.out.println("optionalMember = " + optionalMember.orElseThrow());
+        for (final Member item : result) System.out.println("item = " + item);
+        System.out.println("returnNull = " + returnNull);
+        System.out.println("optionalNull = " + optionalNull);
     }
 }
