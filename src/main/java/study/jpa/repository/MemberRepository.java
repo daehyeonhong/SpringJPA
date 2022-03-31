@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.jpa.dto.MemberDto;
@@ -40,4 +41,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Page<Member> findPageByAge(final int age, final Pageable pageable);
 
     Slice<Member> findSliceByAge(final int age, final Pageable pageable);
+
+    @Modifying(clearAutomatically = true)
+    @Query(value = "update Member m set m.age = m.age+1 where m.age>=:age")
+    int bulkAgePlus(@Param(value = "age") final int age);
 }

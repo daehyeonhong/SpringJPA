@@ -258,4 +258,29 @@ class MemberRepositoryTest {
         assertThat(pageMemberByAge.isFirst()).isTrue();
         assertThat(pageMemberByAge.hasNext()).isTrue();
     }
+
+    @Test
+    @DisplayName(value = "벌크성 업데이트 쿼리")
+    public void bulkUpdate() {
+        //given
+        final Member member1 = new Member("member1", 10);
+        final Member member2 = new Member("member2", 19);
+        final Member member3 = new Member("member3", 20);
+        final Member member4 = new Member("member4", 21);
+        final Member member5 = new Member("member5", 40);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        this.memberRepository.save(member3);
+        this.memberRepository.save(member4);
+        this.memberRepository.save(member5);
+        //when
+        final int resultCount = this.memberRepository.bulkAgePlus(20);
+//        this.entityManager.clear(); //@Modifying(clearAutomatically = true) 로 대체
+
+        final Member result = this.memberRepository.findByUsername("member5").get(0);
+        System.out.println("result = " + result);
+        System.out.println("member5 = " + member5);
+        //then
+        assertThat(resultCount).isEqualTo(3);
+    }
 }
