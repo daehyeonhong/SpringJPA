@@ -4,6 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.jpa.dto.MemberDto;
@@ -195,5 +199,63 @@ class MemberRepositoryTest {
         for (final Member item : result) System.out.println("item = " + item);
         System.out.println("returnNull = " + returnNull);
         System.out.println("optionalNull = " + optionalNull);
+    }
+
+    @Test
+    @DisplayName(value = "JPA Paging Test")
+    public void findByPageTest() {
+        //given
+        final int age = 10;
+        final int size = 3;
+        final Member member1 = new Member("member1", age);
+        final Member member2 = new Member("member2", age);
+        final Member member3 = new Member("member3", age);
+        final Member member4 = new Member("member4", age);
+        final Member member5 = new Member("member5", age);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        this.memberRepository.save(member3);
+        this.memberRepository.save(member4);
+        this.memberRepository.save(member5);
+        //when
+        final PageRequest pageRequest = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "username"));
+        final Page<Member> pageMemberByAge = this.memberRepository.findPageByAge(age, pageRequest);
+        //then
+
+        final Page<MemberDto> memberDtoPage = pageMemberByAge.map(MemberDto::new);
+        final List<MemberDto> members = memberDtoPage.getContent();
+        assertThat(members.size()).isEqualTo(size);
+        assertThat(memberDtoPage.getTotalElements()).isEqualTo(5);
+        assertThat(memberDtoPage.getNumber()).isEqualTo(0);
+        assertThat(memberDtoPage.getTotalPages()).isEqualTo(2);
+        assertThat(memberDtoPage.isFirst()).isTrue();
+        assertThat(memberDtoPage.hasNext()).isTrue();
+    }
+
+    @Test
+    @DisplayName(value = "JPA Slice Test")
+    public void findBySliceTest() {
+        //given
+        final int age = 10;
+        final int size = 3;
+        final Member member1 = new Member("member1", age);
+        final Member member2 = new Member("member2", age);
+        final Member member3 = new Member("member3", age);
+        final Member member4 = new Member("member4", age);
+        final Member member5 = new Member("member5", age);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        this.memberRepository.save(member3);
+        this.memberRepository.save(member4);
+        this.memberRepository.save(member5);
+        //when
+        final PageRequest pageRequest = PageRequest.of(0, size, Sort.by(Sort.Direction.DESC, "username"));
+        final Slice<Member> pageMemberByAge = this.memberRepository.findSliceByAge(age, pageRequest);
+        //then
+        final List<Member> members = pageMemberByAge.getContent();
+        assertThat(members.size()).isEqualTo(size);
+        assertThat(pageMemberByAge.getNumber()).isEqualTo(0);
+        assertThat(pageMemberByAge.isFirst()).isTrue();
+        assertThat(pageMemberByAge.hasNext()).isTrue();
     }
 }

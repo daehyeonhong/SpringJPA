@@ -1,5 +1,8 @@
 package study.jpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,7 +23,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "select m.username from Member m")
     List<String> findUsernameList();
 
-    @Query(value = "select new study.jpa.dto.MemberDto(m.username,m.age,t.name) from Member m join m.team t")
+    @Query(value = "select new study.jpa.dto.MemberDto(m) from Member m join m.team t")
     List<MemberDto> findMemberDto();
 
     @Query(value = "select m from Member m where m.username in :usernames")
@@ -32,4 +35,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findMemberByUsername(final String username);//단건
 
     Optional<Member> findOptionalMemberByUsername(final String username);//단건 Optional
+
+    @Query(value = "select m from Member m left join m.team t", countQuery = "select count(m) from Member m")
+    Page<Member> findPageByAge(final int age, final Pageable pageable);
+
+    Slice<Member> findSliceByAge(final int age, final Pageable pageable);
 }
