@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
 import study.jpa.entity.Team;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,8 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     @DisplayName(value = "멤버 저장 테스트")
@@ -283,4 +287,56 @@ class MemberRepositoryTest {
         //then
         assertThat(resultCount).isEqualTo(3);
     }
+
+    @Test
+    @DisplayName(value = "지연로딩")
+    public void findMemberLazy() {
+        //given
+        //member1->teamA
+        //member2->teamB
+        final Team teamA = new Team("teamA");
+        final Team teamB = new Team("teamB");
+        this.teamRepository.save(teamA);
+        this.teamRepository.save(teamB);
+
+        final Member member1 = new Member("member1", 10, teamA);
+        final Member member2 = new Member("member2", 10, teamB);
+        this.memberRepository.save(member1);
+        this.memberRepository.save(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+
+        //when
+        final List<Member> memberList = this.memberRepository.findAll();
+        this.entityManager.flush();
+        this.entityManager.clear();
+        memberList.forEach(member -> {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("teamClass = " + member.getTeam().getClass());
+            System.out.println("team = " + member.getTeam().getName());
+        });
+        final List<Member> memberFetchJoinList = this.memberRepository.findMemberFetchJoin();
+        this.entityManager.flush();
+        this.entityManager.clear();
+        memberFetchJoinList.forEach(member -> {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("teamClass = " + member.getTeam().getClass());
+            System.out.println("team = " + member.getTeam().getName());
+        });
+        final List<Member> memberEntityGraph = this.memberRepository.findMemberEntityGraph();
+        memberEntityGraph.forEach(member -> {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("teamClass = " + member.getTeam().getClass());
+            System.out.println("team = " + member.getTeam().getName());
+        });
+        this.entityManager.flush();
+        this.entityManager.clear();
+        final List<Member> entityGraphByUsername = this.memberRepository.findEntityGraphByUsername("member1");
+        entityGraphByUsername.forEach(member -> {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("teamClass = " + member.getTeam().getClass());
+            System.out.println("team = " + member.getTeam().getName());
+        });
+    }
+
 }
