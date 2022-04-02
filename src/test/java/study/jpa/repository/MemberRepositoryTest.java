@@ -339,4 +339,21 @@ class MemberRepositoryTest {
         });
     }
 
+    @Test
+    @DisplayName(value = "쿼리 힌트 테스트")
+    public void queryHint() {
+        //given
+        final Member member = new Member("member1", 10);
+        this.memberRepository.save(member);
+        this.entityManager.flush();
+        this.entityManager.clear();
+        //when
+        final Member findMember = this.memberRepository.findReadOnlyByUsername(member.getUsername());
+        findMember.changeUsername("member2");
+        //then
+        this.entityManager.flush();
+        final List<Member> lockByUsername = this.memberRepository.findLockByUsername(member.getUsername());
+        System.out.println("lockByUsername = " + lockByUsername);
+    }
+
 }
