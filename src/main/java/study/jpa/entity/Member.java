@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.NamedQuery;
+import java.io.Serializable;
 import static javax.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
@@ -28,7 +29,7 @@ import static lombok.AccessLevel.PROTECTED;
         name = "Member.all",
         attributeNodes = @NamedAttributeNode(value = "team")
 )
-public class Member {
+public class Member extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "member_di")

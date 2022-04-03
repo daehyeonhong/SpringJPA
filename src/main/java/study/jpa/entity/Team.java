@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import static lombok.AccessLevel.PRIVATE;
@@ -17,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @FieldDefaults(level = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-public class Team {
+public class Team extends BaseEntity implements Serializable {
     @OneToMany(mappedBy = "team")
     final
     List<Member> members = new ArrayList<>();

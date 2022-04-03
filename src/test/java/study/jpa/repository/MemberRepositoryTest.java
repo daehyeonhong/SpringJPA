@@ -372,4 +372,25 @@ class MemberRepositoryTest {
         //then
         assertThat(memberCustom).isEqualTo(allMembers);
     }
+
+    @Test
+    @DisplayName(value = "이벤트 베이스 엔티티 테스트")
+    public void jpaEventBaseEntity() throws InterruptedException {
+        //given
+        final Member member = new Member("member1");
+        this.memberRepository.save(member);//@PrePersist
+
+        Thread.sleep(1000);
+        member.changeUsername("member2");//@PreUpdate
+        this.entityManager.flush();
+        this.entityManager.clear();
+        //when
+        final Member findMember = this.memberRepository.findById(member.getId()).orElseThrow();
+        //then
+        System.out.println("findMember = " + findMember.getCreatedBy());
+        System.out.println("findMember = " + findMember.getCreatedDate());
+        System.out.println("findMember = " + findMember.getLastModifiedBy());
+        System.out.println("findMember = " + findMember.getLastModifiedDate());
+//        System.out.println("findMember = " + findMember.getUpdatedDate());
+    }
 }
