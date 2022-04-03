@@ -28,6 +28,8 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private TeamRepository teamRepository;
+    @Autowired
+    private MemberQueryRepository memberQueryRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -356,4 +358,18 @@ class MemberRepositoryTest {
         System.out.println("lockByUsername = " + lockByUsername);
     }
 
+    @Test
+    @DisplayName(value = "커스텀 메소드 호출")
+    public void callCustomTest() {
+        //given
+        final Member member = new Member("member1", 10);
+        this.memberRepository.save(member);
+        this.entityManager.flush();
+        this.entityManager.clear();
+        //when
+        final List<Member> memberCustom = this.memberRepository.findMemberCustom();
+        final List<Member> allMembers = this.memberQueryRepository.findAllMembers();
+        //then
+        assertThat(memberCustom).isEqualTo(allMembers);
+    }
 }

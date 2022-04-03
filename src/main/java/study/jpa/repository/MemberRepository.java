@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import static javax.persistence.LockModeType.PESSIMISTIC_WRITE;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
     List<Member> findByUsernameAndAgeGreaterThan(final String username, final int age);
 
     List<Member> findByUsername(@Param(value = "username") final String username);
