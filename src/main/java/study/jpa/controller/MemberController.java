@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import study.jpa.dto.MemberDto;
 import study.jpa.entity.Member;
 import study.jpa.repository.MemberRepository;
-import javax.annotation.PostConstruct;
 import java.util.stream.IntStream;
 
 @RestController
@@ -33,7 +32,7 @@ public class MemberController {
         return this.memberRepository.findAll(pageable).map(MemberDto::new);
     }
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         IntStream.range(0, 100).mapToObj(i -> new Member("user" + i, i)).forEach(this.memberRepository::save);
     }
