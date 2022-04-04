@@ -32,7 +32,7 @@ public class MemberController {
         return this.memberRepository.findAll(pageable).map(MemberDto::new);
     }
 
-//    @PostConstruct
+    //    @PostConstruct
     public void init() {
         IntStream.range(0, 100).mapToObj(i -> new Member("user" + i, i)).forEach(this.memberRepository::save);
     }
