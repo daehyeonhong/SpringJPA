@@ -441,4 +441,36 @@ class MemberRepositoryTest {
         assertThat(this.memberRepository.findAll(example).get(0).getUsername())
                 .isEqualTo("member1");
     }
+
+    @Test
+    @DisplayName(value = "projectionsTest")
+    public void projectionsTest() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.entityManager.persist(teamA);
+
+        final Member member1 = new Member("member1", 0, teamA);
+        final Member member2 = new Member("member2", 0, teamA);
+        this.entityManager.persist(member1);
+        this.entityManager.persist(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+
+        //then
+        final List<UsernameOnly> result = this.memberRepository.findProjectionsByUsername("member1");
+        for (UsernameOnly usernameOnly : result) {
+            System.out.println("usernameOnly = " + usernameOnly);
+            System.out.println("usernameOnly = " + usernameOnly.getUsername());
+        }
+        final List<UsernameOnlyDto> classProjectionsByUsername = this.memberRepository.findClassProjectionsByUsername("member1");
+        for (UsernameOnlyDto usernameOnlyDto : classProjectionsByUsername) {
+            System.out.println("usernameOnlyDto = " + usernameOnlyDto);
+            System.out.println("usernameOnlyDto = " + usernameOnlyDto.getUsername());
+        }
+        final List<NestedClosedProjections> resultType = this.memberRepository.findProjectionsByUsername("member1", NestedClosedProjections.class);
+        for (NestedClosedProjections usernameOnlyDto : resultType) {
+            System.out.println("usernameOnlyDto = " + usernameOnlyDto);
+            System.out.println("usernameOnlyDto = " + usernameOnlyDto.getUsername());
+        }
+    }
 }
