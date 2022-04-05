@@ -4,6 +4,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -412,7 +414,31 @@ class MemberRepositoryTest {
 
         final Specification<Member> memberSpecification = MemberSpecification.userName("member1").and(MemberSpecification.teamName("teamA"));
         final List<Member> members = this.memberRepository.findAll(memberSpecification);
-        assertThat(members.size()).isEqualTo(1);
         //then
+        assertThat(members.size()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName(value = "queryByExampleTest")
+    public void queryByExampleTest() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.entityManager.persist(teamA);
+
+        final Member member1 = new Member("member1", 0, teamA);
+        final Member member2 = new Member("member2", 0, teamA);
+        this.entityManager.persist(member1);
+        this.entityManager.persist(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+        //when
+        final Member member = new Member("member1");
+        member.changeTeam(teamA);
+        final ExampleMatcher matcher = ExampleMatcher.matching()
+                .withIgnorePaths("age");
+        final Example<Member> example = Example.of(member, matcher);
+        //then
+        assertThat(this.memberRepository.findAll(example).get(0).getUsername())
+                .isEqualTo("member1");
     }
 }
