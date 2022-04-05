@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.jpa.dto.MemberDto;
@@ -392,5 +393,26 @@ class MemberRepositoryTest {
         System.out.println("findMember = " + findMember.getLastModifiedBy());
         System.out.println("findMember = " + findMember.getLastModifiedDate());
 //        System.out.println("findMember = " + findMember.getUpdatedDate());
+    }
+
+    @Test
+    @DisplayName(value = "specification test")
+    public void specTest() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.entityManager.persist(teamA);
+
+        final Member member1 = new Member("member1", 0, teamA);
+        final Member member2 = new Member("member2", 0, teamA);
+        this.entityManager.persist(member1);
+        this.entityManager.persist(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+        //when
+
+        final Specification<Member> memberSpecification = MemberSpecification.userName("member1").and(MemberSpecification.teamName("teamA"));
+        final List<Member> members = this.memberRepository.findAll(memberSpecification);
+        assertThat(members.size()).isEqualTo(1);
+        //then
     }
 }
