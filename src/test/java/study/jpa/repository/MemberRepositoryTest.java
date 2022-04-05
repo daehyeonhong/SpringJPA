@@ -473,4 +473,48 @@ class MemberRepositoryTest {
             System.out.println("usernameOnlyDto = " + usernameOnlyDto.getUsername());
         }
     }
+
+    @Test
+    @DisplayName(value = "nativeQueryTest")
+    public void nativeQueryTest() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.entityManager.persist(teamA);
+
+        final Member member1 = new Member("member1", 0, teamA);
+        final Member member2 = new Member("member2", 0, teamA);
+        this.entityManager.persist(member1);
+        this.entityManager.persist(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+
+        //then
+        final Member result = this.memberRepository.findByNativeQuery("member1");
+        System.out.println("result = " + result);
+    }
+
+    @Test
+    @DisplayName(value = "nativeQueryWithProjectionTest")
+    public void nativeQueryWithProjectionTest() {
+        //given
+        final Team teamA = new Team("teamA");
+        this.entityManager.persist(teamA);
+
+        final Member member1 = new Member("member1", 0, teamA);
+        final Member member2 = new Member("member2", 0, teamA);
+        this.entityManager.persist(member1);
+        this.entityManager.persist(member2);
+        this.entityManager.flush();
+        this.entityManager.clear();
+
+        //then
+        final Page<MemberProjection> result = this.memberRepository.findByNativeProjection(PageRequest.of(0, 10));
+        final List<MemberProjection> contentList = result.getContent();
+        for (MemberProjection memberProjection : contentList) {
+            System.out.println("memberProjection = " + memberProjection);
+            System.out.println("Id = " + memberProjection.getId());
+            System.out.println("TeamName = " + memberProjection.getTeamName());
+            System.out.println("Username = " + memberProjection.getUsername());
+        }
+    }
 }

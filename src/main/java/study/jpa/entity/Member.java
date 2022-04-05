@@ -32,7 +32,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class Member extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue
-    @Column(name = "member_di")
+    @Column(name = "member_id")
     Long id;
     String username;
     int age;
